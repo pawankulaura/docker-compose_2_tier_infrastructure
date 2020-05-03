@@ -1,0 +1,33 @@
+version: '3.3'
+
+# define services (containers) that should be running
+services:
+  my-mongo-db:
+    image: mongo:3.2
+    # what volumes to attach to this container
+    volumes:
+      - mongo-volume:/var/db
+    # what networks to attach this container
+    networks:
+     - my-network
+
+  my-app:
+    image: Apache:latest
+    # path to Dockerfile to build an image and start a container
+    build: .
+    environment:
+      - DATABASE_HOST=my-mongo-db
+    ports:
+      - 6565:6565
+    networks:
+     - my-network
+    # start my-app only after mongod-database service was started
+    depends_on:
+      - my-mongo-db
+
+# define volumes to be created
+volumes:
+  mongo-volume:
+# define networks to be created
+networks:
+  my-network:
